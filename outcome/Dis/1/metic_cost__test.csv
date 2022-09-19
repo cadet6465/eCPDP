@@ -1,0 +1,8 @@
+project,none,znorm,qrs,qrs_box,journal
+win,16,14,13,12,0
+tie,2,2,2,8,0
+lose,6,8,9,4,0
+neg,7,10,11,9,0
+small,1,0,0,4,0
+medium,0,0,1,4,0
+large,16,14,12,7,0
