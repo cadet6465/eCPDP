@@ -54,18 +54,6 @@ class SVD2Classifier(object):
         #     self.clf = GaussianNB()
 
         # SCV
-        # if grid :
-        #     if grid:
-        #         grid = {
-        #             'C': [0.001, 0.01, 0.1, 1, 10, 100],
-        #             'penalty': ['l1', 'l2'],
-        #             'loss': ['hinge', 'squared_hinge']
-        #         }
-        #     self.ori_clssifier = LinearSVC(class_weight='balanced')
-        #     self.clf = GridSearchCV(self.ori_clssifier, param_grid=grid,scoring='f1',n_jobs=4)
-        # else :
-        #     self.clf = LinearSVC(class_weight='balanced')
-        #
         # if grid:
         #     if grid:
         #         grid = {
@@ -77,18 +65,7 @@ class SVD2Classifier(object):
         # else:
         #     self.clf = SVC(class_weight='balanced')
 
-        # Ridge
-        # if grid :
-        #     grid = {
-        #         'alpha' : [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-        #         'normalize' : [True, False],
-        #         'solver': ['svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag', 'saga', 'lbfgs']
-        #     }
-        #     self.ori_clssifier = RidgeClassifier(class_weight='balanced')
-        #     self.clf = GridSearchCV(self.ori_clssifier, param_grid=grid,scoring='f1')
-        # else :
-        #     self.clf = RidgeClassifier(class_weight='balanced')
-
+        # LR
         if grid :
             grid = {
                 'C' : [100, 10, 1.0, 0.1, 0.01],
@@ -113,10 +90,21 @@ class SVD2Classifier(object):
         SVDX = get_svd(X)
         U = SVDX[0]
         D = SVDX[1]
-        V = SVDX[2]
-        t_Z = Z.T
-        CX = np.dot(np.diag(D), V).T
-        CZ = np.dot(U.T, t_Z).T
+        V_T = SVDX[2]
+        Z_T = Z.T
+        CX = np.dot(np.diag(D), V_T).T
+
+
+        # Applied at once for convenience, calculation is independent of each target model data.
+        CZ = np.dot(U.T, Z_T).T
+
+        # Align only a target module data
+        # t_CZ = np.dot(U.T, Z_T[:,0]).T
+        # print('t_CZ is ', CZ[0,:])
+        # Check first module data, after calculation at once
+        # print('CZ is ', CZ[0,:])
+        # Two resurlts are same
+
 
         return CX, CZ
 
@@ -128,7 +116,6 @@ class SVD2Classifier(object):
         importances = imps.importances_mean
         self.clf.coef_ = importances
         sel_model = SelectFromModel(self.clf, prefit=True)
-        # sel_model = SelectFromModel(self.clf, prefit=True)
 
         trunCX = sel_model.transform(CX)
         trunCZ = sel_model.transform(CZ)

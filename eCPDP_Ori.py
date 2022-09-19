@@ -50,6 +50,7 @@ if __name__ == '__main__':
                 for S_project_name, data in Tdataset.items():
                     s_pro_name.append(S_project_name)
                     S_data = ut.datasetSame(data)
+                    # Applied at once for convenience, calculation is independent of each target model data.
                     sX, tX, sY, tY = ut.preprocessing(S_data,T_data,NORM)
                     classfier = cl.SVD2Classifier(grid =GRID)
 
@@ -58,6 +59,7 @@ if __name__ == '__main__':
                         prob, pred = classfier.predict(tX)
 
                     else :
+                        # Applied at once for convenience, calculation is independent of each target model data.
                         Aligned_sX, Aligned_tX = classfier.align_data(sX, tX)
                         FSed_sX, FSed_tX, result = classfier.feature_select(Aligned_sX, sY, Aligned_tX)
                         classfier.fit(FSed_sX, sY)
